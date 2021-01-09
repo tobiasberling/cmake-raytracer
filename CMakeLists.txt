@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.18) # cmake_language command requires 3.18
-project(cmake-raytracer LANGUAGES NONE)
+if (NOT CMAKE_SCRIPT_MODE_FILE)
+    project(cmake-raytracer LANGUAGES NONE)
+endif()
 
 if(NOT DEFINED image_width)
     set(image_width 64)
@@ -16,7 +18,7 @@ if(NOT DEFINED worker_index)
 
     set(exec_command "execute_process(\n")
     foreach(worker_index RANGE 1 ${num_procs})
-        set(exec_command "${exec_command}COMMAND cmake . -Wno-dev -Dworker_index=${worker_index} -Dimage_width=${image_width} -Dimage_height=${image_height} -Dnum_procs=${num_procs}\n")
+        set(exec_command "${exec_command}COMMAND cmake -Wno-dev -Dworker_index=${worker_index} -Dimage_width=${image_width} -Dimage_height=${image_height} -Dnum_procs=${num_procs} -P ${CMAKE_CURRENT_LIST_FILE}\n")
     endforeach()
     set(exec_command "${exec_command} )")
 
