@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18) # cmake_language command requires 3.18
+cmake_minimum_required(VERSION 3.15)
 if (NOT CMAKE_SCRIPT_MODE_FILE)
     project(cmake-raytracer LANGUAGES NONE)
 endif()
@@ -16,14 +16,13 @@ endif()
 if(NOT DEFINED worker_index)
     message(STATUS "Launching ray tracer with ${num_procs} processes, ${image_width}x${image_height} image...")
 
-    set(exec_command "execute_process(\n")
+    set(exec_command "")
     foreach(worker_index RANGE 1 ${num_procs})
-        set(exec_command "${exec_command}COMMAND ${CMAKE_COMMAND} -Wno-dev -Dworker_index=${worker_index} -Dimage_width=${image_width} -Dimage_height=${image_height} -Dnum_procs=${num_procs} -P ${CMAKE_CURRENT_LIST_FILE}\n")
+        list(APPEND exec_command COMMAND ${CMAKE_COMMAND} -Wno-dev -Dworker_index=${worker_index} -Dimage_width=${image_width} -Dimage_height=${image_height} -Dnum_procs=${num_procs} -P ${CMAKE_CURRENT_LIST_FILE})
     endforeach()
-    set(exec_command "${exec_command} )")
 
     # Begin the worker processes
-    cmake_language(EVAL CODE ${exec_command})
+    execute_process(${exec_command})
 
     message(STATUS "Finished ray tracing, gathering results...")
 
