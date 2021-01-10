@@ -25,7 +25,7 @@ if(NOT DEFINED worker_index)
     endforeach()
 
     # Begin the worker processes
-    execute_process(${exec_command})
+    execute_process(${exec_command} WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
     message(STATUS "Finished ray tracing, gathering results ...")
 
@@ -33,7 +33,7 @@ if(NOT DEFINED worker_index)
     set(image_contents "P3 ${image_width} ${image_height}\n255\n\n")
 
     foreach(worker_index RANGE 1 ${num_procs})
-        file(READ "worker-${worker_index}.txt" file_contents)
+        file(READ "${CMAKE_CURRENT_BINARY_DIR}/worker-${worker_index}.txt" file_contents)
         set(image_contents "${image_contents}${file_contents}")
     endforeach()
 
