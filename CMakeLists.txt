@@ -30,15 +30,14 @@ if(NOT DEFINED worker_index)
     message(STATUS "Finished ray tracing, gathering results ...")
 
     # Output PPM
-    set(image_contents "P3 ${image_width} ${image_height}\n255\n\n")
+    file(WRITE "${output}" "P3 ${image_width} ${image_height}\n255\n\n")
 
     foreach(worker_index RANGE 1 ${num_procs})
         file(READ "${CMAKE_CURRENT_BINARY_DIR}/worker-${worker_index}.txt" file_contents)
-        set(image_contents "${image_contents}${file_contents}")
+        file(APPEND "${output}" "${file_contents}")
     endforeach()
 
-    message(STATUS "Writing image to ${output} ...")
-    file(WRITE "${output}" "${image_contents}")
+    message(STATUS "Image written to ${output}")
 
     return()
 elseif(${worker_index} LESS_EQUAL 0 OR ${worker_index} GREATER ${num_procs})
