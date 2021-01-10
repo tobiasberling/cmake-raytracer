@@ -12,9 +12,12 @@ endif()
 if(NOT DEFINED num_procs)
     set(num_procs 2)
 endif()
+if(NOT DEFINED output)
+    set(output "image.ppm")
+endif()
 
 if(NOT DEFINED worker_index)
-    message(STATUS "Launching ray tracer with ${num_procs} processes, ${image_width}x${image_height} image...")
+    message(STATUS "Launching ray tracer with ${num_procs} processes, ${image_width}x${image_height} image ...")
 
     set(exec_command "")
     foreach(worker_index RANGE 1 ${num_procs})
@@ -24,7 +27,7 @@ if(NOT DEFINED worker_index)
     # Begin the worker processes
     execute_process(${exec_command})
 
-    message(STATUS "Finished ray tracing, gathering results...")
+    message(STATUS "Finished ray tracing, gathering results ...")
 
     # Output PPM
     set(image_contents "P3 ${image_width} ${image_height}\n255\n\n")
@@ -34,7 +37,8 @@ if(NOT DEFINED worker_index)
         set(image_contents "${image_contents}${file_contents}")
     endforeach()
 
-    message("${image_contents}")
+    message(STATUS "Writing image to ${output} ...")
+    file(WRITE "${output}" "${image_contents}")
 
     return()
 elseif(${worker_index} LESS_EQUAL 0 OR ${worker_index} GREATER ${num_procs})
